@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estudio de Mercado</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#F5F4F0;
+  --bg2:#ECEAE4;
+  --bg3:#E0DED6;
+  --surface:#FFFFFF;
+  --border:#D5D2C8;
+  --border2:#C8C5BA;
+  --text:#1A1916;
+  --text2:#6B6860;
+  --text3:#9B9890;
+  --accent:#1A1916;
+  --green:#1D7A52;
+  --green-bg:#E3F5EC;
+  --red:#C0392B;
+  --red-bg:#FDECEA;
+  --blue:#1A4E8C;
+  --blue-bg:#E6F1FB;
+  --radius:10px;
+  --radius-sm:6px;
+}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:0;
+}
+
+.app{
+  max-width:480px;
+  margin:0 auto;
+  background:var(--surface);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* HEADER */
+.header{
+  background:var(--text);
+  color:#F5F4F0;
+  padding:14px 18px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.header-title{font-size:15px;font-weight:600;letter-spacing:-.02em}
+.header-sub{font-size:11px;opacity:.55;margin-top:1px}
+.clock{
+  font-family:'DM Mono',monospace;
+  font-size:12px;
+  background:rgba(255,255,255,.1);
+  padding:4px 9px;
+  border-radius:20px;
+  display:flex;align-items:center;gap:5px;
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#4CD964;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* TABS */
+.tabs{
+  display:flex;
+  overflow-x:auto;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  scrollbar-width:none;
+  position:sticky;
+  top:57px;
+  z-index:99;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex-shrink:0;
+  padding:11px 16px;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text2);
+  cursor:pointer;
+  border:none;
+  background:none;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  letter-spacing:.01em;
+  white-space:nowrap;
+  transition:color .15s;
+}
+.tab.active{color:var(--text);border-bottom-color:var(--text)}
+
+/* CONTENT */
+.content{flex:1;padding:16px}
+.section{display:none}.section.active{display:block}
+
+/* FORM FIELDS */
+.field{margin-bottom:14px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+label{
+  display:block;
+  font-size:10px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--text3);
+  margin-bottom:5px;
+}
+input,select,textarea{
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  background:var(--bg);
+  color:var(--text);
+  width:100%;
+  transition:border-color .15s,background .15s;
+  appearance:none;
+  -webkit-appearance:none;
+}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6860' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:32px;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--text);
+  background:var(--surface);
+}
+textarea{resize:vertical;min-height:72px;line-height:1.5}
+
+/* DIVIDER */
+.divider{
+  height:1px;
+  background:var(--border);
+  margin:16px 0;
+}
+.section-label{
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--text3);
+  margin-bottom:10px;
+}
+
+/* COLOR SWATCHES */
+.swatches{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:6px}
+.swatch{
+  width:28px;height:28px;border-radius:50%;cursor:pointer;
+  border:2px solid transparent;flex-shrink:0;position:relative;
+  transition:transform .12s,border-color .12s;
+}
+.swatch:hover{transform:scale(1.1)}
+.swatch.sel::after{
+  content:'✓';position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;
+  font-size:12px;color:#fff;text-shadow:0 0 3px #0009;font-weight:700;
+}
+.swatch.sel{border-color:var(--text)}
+.color-hint{font-size:11px;color:var(--text2);margin-top:4px}
+
+/* TAG BUTTONS (opciones) */
+.tag-opts{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.tag-btn{
+  padding:5px 11px;border-radius:20px;font-size:12px;cursor:pointer;
+  font-weight:500;border:none;transition:opacity .12s,transform .08s;
+  font-family:'DM Sans',sans-serif;
+}
+.tag-btn:active{transform:scale(.95)}
+.tag-btn:hover{opacity:.8}
+
+/* TAGS AREA (seleccionados) */
+.tags-area{
+  display:flex;flex-wrap:wrap;gap:5px;
+  padding:8px 10px;
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  min-height:42px;
+  background:var(--bg);
+  transition:border-color .15s;
+}
+.tags-area:focus-within{border-color:var(--text)}
+.tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 9px;border-radius:20px;
+  font-size:12px;font-weight:500;
+  cursor:default;
+  position:relative;
+}
+.tag .x{
+  cursor:pointer;font-size:10px;opacity:.5;margin-left:1px;
+  transition:opacity .1s;
+}
+.tag .x:hover{opacity:1}
+.tag .edit-icon{
+  cursor:pointer;font-size:9px;opacity:.4;margin-left:0;
+  transition:opacity .1s;
+}
+.tag .edit-icon:hover{opacity:.9}
+.tag-empty{font-size:12px;color:var(--text3);align-self:center}
+
+/* TAG EDIT MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:#0005;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .18s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--surface);border-radius:14px;
+  padding:20px;width:100%;max-width:320px;
+  box-shadow:0 16px 48px #0002;
+  transform:translateY(12px);transition:transform .18s;
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-size:14px;font-weight:600;margin-bottom:14px}
+.modal-input{font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);width:100%;margin-bottom:10px}
+.modal-input:focus{outline:none;border-color:var(--text);background:var(--surface)}
+.color-select-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.color-sel-opt{
+  padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;
+  cursor:pointer;border:2px solid transparent;transition:border-color .12s;
+}
+.color-sel-opt.chosen{border-color:var(--text)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* CUSTOM TAG INPUT ROW */
+.custom-input-row{display:flex;gap:6px;align-items:center;margin-top:6px}
+.custom-input-row input{flex:1;font-size:12px;padding:7px 10px}
+.custom-input-row select{width:auto;font-size:12px;padding:7px 10px;flex-shrink:0}
+
+/* BUTTONS */
+.btn{
+  padding:11px 18px;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:600;cursor:pointer;
+  border:1px solid var(--text);
+  background:var(--text);color:var(--bg);
+  transition:opacity .15s;font-family:'DM Sans',sans-serif;
+  letter-spacing:.01em;
+}
+.btn:hover{opacity:.82}
+.btn-sec{background:transparent;color:var(--text);border-color:var(--border2)}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-danger{border-color:#F7C1C1;color:var(--red);background:transparent}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* SAVE MESSAGE */
+.save-msg{font-size:13px;margin-top:10px;display:none;padding:9px 12px;border-radius:var(--radius-sm);background:var(--green-bg);color:var(--green);font-weight:500}
+
+/* RECORD CARDS */
+.record-card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  display:flex;gap:10px;
+  margin-bottom:8px;
+  transition:border-color .15s;
+}
+.record-card:hover{border-color:var(--border2)}
+.rec-main{flex:1;min-width:0}
+.rec-top{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:3px}
+.rec-tipo{font-size:14px;font-weight:600}
+.rec-meta{font-size:11px;color:var(--text2)}
+.rec-detail{font-size:11px;color:var(--text2);margin-bottom:5px}
+.rec-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
+.rec-obs{font-size:11px;color:var(--text2);font-style:italic}
+.rec-del{
+  font-size:11px;color:var(--text2);cursor:pointer;
+  padding:3px 7px;border:1px solid var(--border);border-radius:4px;
+  background:none;flex-shrink:0;height:fit-content;
+  transition:background .12s,color .12s;font-family:'DM Sans',sans-serif;
+}
+.rec-del:hover{background:var(--red-bg);color:var(--red);border-color:#F7C1C1}
+
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.metric-card{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;
+}
+.metric-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px}
+.metric-val{font-size:20px;font-weight:600;color:var(--text);line-height:1.1}
+.chart-box{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;
+}
+.chart-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.bar-label{font-size:12px;color:var(--text2);width:88px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:12px;background:var(--bg2);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;transition:width .4s ease}
+.bar-count{font-size:11px;color:var(--text2);min-width:20px;text-align:right;font-family:'DM Mono',monospace}
+
+/* INSIGHT CARD */
+.insight-card{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;
+}
+
+/* CLOUD STEPS */
+.cloud-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.cloud-num{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--text);color:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+.cloud-text{font-size:13px;color:var(--text2);line-height:1.5}
+.cloud-text code{
+  font-family:'DM Mono',monospace;font-size:11px;
+  background:var(--bg2);padding:1px 5px;border-radius:3px;color:var(--text);
+}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text2);font-size:13px}
+.empty-icon{font-size:32px;margin-bottom:8px;opacity:.4}
+
+/* INFO BOX */
+.info-box{
+  background:var(--blue-bg);border-radius:var(--radius-sm);
+  padding:10px 14px;font-size:13px;color:var(--blue);
+  margin-bottom:14px;line-height:1.55;border:1px solid #C8DEFF;
+}
+
+/* CSV preview */
+.csv-preview{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px 12px;
+  font-family:'DM Mono',monospace;font-size:10px;
+  color:var(--text2);overflow-x:auto;white-space:pre-wrap;
+  max-height:180px;overflow-y:auto;line-height:1.6;
+}
+
+/* SYNCED BADGE */
+.sync-badge{color:var(--green);font-size:10px;font-weight:600;background:var(--green-bg);padding:1px 6px;border-radius:10px}
+
+/* Section header */
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;flex-wrap:wrap;gap:8px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">Estudio de mercado</div>
+    <div class="header-sub">Productos tecnológicos</div>
+  </div>
+  <div class="clock"><span class="live-dot"></span><span id="clock-txt">--:--</span></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('registro',this)">+ Registrar</button>
+  <button class="tab" onclick="switchTab('datos',this)">Registros</button>
+  <button class="tab" onclick="switchTab('metricas',this)">Métricas</button>
+  <button class="tab" onclick="switchTab('nube',this)">☁ Nube</button>
+  <button class="tab" onclick="switchTab('exportar',this)">Exportar</button>
+</div>
+
+<div class="content">
+
+<!-- ══════════ REGISTRO ══════════ -->
+<div id="tab-registro" class="section active">
+
+  <!-- Tipo -->
+  <div class="field">
+    <label>Tipo de producto</label>
+    <select id="tipo">
+      <option value="">Seleccionar...</option>
+      <option>Audífonos inalámbricos</option>
+      <option>Audífonos con cable</option>
+      <option>Parlantes</option>
+      <option>Cargador</option>
+      <option>Gadget</option>
+      <option>Mouse</option>
+      <option>Teclado</option>
+      <option>Celular/Teléfono</option>
+      <option>Smartwatch</option>
+      <option>Otro</option>
+    </select>
+  </div>
+
+  <!-- Marca + Modelo -->
+  <div class="field-row">
+    <div>
+      <label>Marca</label>
+      <input id="marca" list="marcas-list" placeholder="ej: Sony, Apple…">
+      <datalist id="marcas-list">
+        <option>Apple</option><option>Samsung</option><option>Sony</option>
+        <option>JBL</option><option>Xiaomi</option><option>Huawei</option>
+        <option>Bose</option><option>Anker</option><option>Logitech</option>
+      </datalist>
+    </div>
+    <div>
+      <label>Modelo</label>
+      <input id="modelo" placeholder="ej: WH-1000XM5">
+    </div>
+  </div>
+
+  <!-- Sexo + Edad -->
+  <div class="field-row">
+    <div>
+      <label>Sexo</label>
+      <select id="sexo">
+        <option value="">—</option>
+        <option>Masculino</option>
+        <option>Femenino</option>
+        <option>No determinado</option>
+      </select>
+    </div>
+    <div>
+      <label>Rango de edad</label>
+      <select id="edad">
+        <option value="">—</option>
+        <option>10–20 años</option>
+        <option>20–30 años</option>
+        <option>30–40 años</option>
+        <option>+40 años</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Color -->
+  <div class="field">
+    <div class="section-label">Color del producto</div>
+    <div class="swatches" id="color-swatches">
+      <div class="swatch sel" data-color="Negro" style="background:#1c1c1e" title="Negro"></div>
+      <div class="swatch" data-color="Blanco" style="background:#f0f0ea;border:.5px solid #ccc" title="Blanco"></div>
+      <div class="swatch" data-color="Gris" style="background:#8e8e93" title="Gris"></div>
+      <div class="swatch" data-color="Azul" style="background:#3478f6" title="Azul"></div>
+      <div class="swatch" data-color="Rojo" style="background:#e53935" title="Rojo"></div>
+      <div class="swatch" data-color="Verde" style="background:#34c759" title="Verde"></div>
+      <div class="swatch" data-color="Amarillo" style="background:#ffd60a" title="Amarillo"></div>
+      <div class="swatch" data-color="Rosa" style="background:#f78ca0" title="Rosa"></div>
+      <div class="swatch" data-color="Morado" style="background:#bf5af2" title="Morado"></div>
+      <div class="swatch" data-color="Naranja" style="background:#ff9500" title="Naranja"></div>
+      <div class="swatch" data-color="Dorado" style="background:#c9a84c" title="Dorado"></div>
+      <div class="swatch" data-color="Plateado" style="background:#c7c7cc" title="Plateado"></div>
+      <div class="swatch" id="custom-color-swatch" data-color="" title="Otro color"
+        style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);position:relative;overflow:hidden;">
+        <input type="color" id="color-picker-input" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;padding:0">
+      </div>
+    </div>
+    <div class="color-hint">Seleccionado: <strong id="color-name-txt">Negro</strong></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Lugares -->
+  <div class="field">
+    <div class="section-label">Lugar / Zona</div>
+    <div class="tag-opts" id="lugar-opts">
+      <span class="tag-btn" style="background:#E6F1FB;color:#0C447C" onclick="addLugar('Mall/Centro comercial','#E6F1FB','#0C447C')">Mall/Centro comercial</span>
+      <span class="tag-btn" style="background:#EAF3DE;color:#27500A" onclick="addLugar('Universidad','#EAF3DE','#27500A')">Universidad</span>
+      <span class="tag-btn" style="background:#FAEEDA;color:#633806" onclick="addLugar('Parque','#FAEEDA','#633806')">Parque</span>
+      <span class="tag-btn" style="background:#EEEDFE;color:#3C3489" onclick="addLugar('Metro/Bus','#EEEDFE','#3C3489')">Metro/Bus</span>
+      <span class="tag-btn" style="background:#E1F5EE;color:#085041" onclick="addLugar('Calle','#E1F5EE','#085041')">Calle</span>
+      <span class="tag-btn" style="background:#FAECE7;color:#993C1D" onclick="addLugar('Café/Restaurant','#FAECE7','#993C1D')">Café/Restaurant</span>
+      <span class="tag-btn" style="background:#FBEAF0;color:#72243E" onclick="addLugar('Gimnasio','#FBEAF0','#72243E')">Gimnasio</span>
+      <span class="tag-btn" style="background:#F1EFE8;color:#444441" onclick="addLugar('Oficina','#F1EFE8','#444441')">Oficina</span>
+    </div>
+    <div class="custom-input-row">
+      <input id="custom-lugar-input" placeholder="Lugar personalizado…">
+      <select id="custom-lugar-color">
+        <option value="#E6F1FB|#0C447C">Azul</option>
+        <option value="#EEEDFE|#3C3489">Morado</option>
+        <option value="#EAF3DE|#27500A">Verde</option>
+        <option value="#FAEEDA|#633806">Ámbar</option>
+        <option value="#E1F5EE|#085041">Teal</option>
+        <option value="#FAECE7|#993C1D">Coral</option>
+        <option value="#FBEAF0|#72243E">Rosa</option>
+        <option value="#F1EFE8|#444441">Gris</option>
+      </select>
+      <button class="btn btn-sec btn-sm" onclick="addCustomLugar()">+ Añadir</button>
+    </div>
+    <div class="tags-area" id="selected-lugares" style="margin-top:8px">
+      <span class="tag-empty">Ningún lugar seleccionado</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Tags -->
+  <div class="field">
+    <div class="section-label">Tags de categoría</div>
+    <div class="tag-opts" id="tag-opts">
+      <span class="tag-btn" style="background:#E6F1FB;color:#0C447C" onclick="addTag('Premium','#E6F1FB','#0C447C')">Premium</span>
+      <span class="tag-btn" style="background:#EEEDFE;color:#3C3489" onclick="addTag('Gamer','#EEEDFE','#3C3489')">Gamer</span>
+      <span class="tag-btn" style="background:#EAF3DE;color:#27500A" onclick="addTag('Económico','#EAF3DE','#27500A')">Económico</span>
+      <span class="tag-btn" style="background:#FAEEDA;color:#633806" onclick="addTag('Deportivo','#FAEEDA','#633806')">Deportivo</span>
+      <span class="tag-btn" style="background:#E1F5EE;color:#085041" onclick="addTag('Minimalista','#E1F5EE','#085041')">Minimalista</span>
+      <span class="tag-btn" style="background:#FAECE7;color:#993C1D" onclick="addTag('Vintage','#FAECE7','#993C1D')">Vintage</span>
+      <span class="tag-btn" style="background:#F1EFE8;color:#444441" onclick="addTag('Trabajo','#F1EFE8','#444441')">Trabajo</span>
+      <span class="tag-btn" style="background:#FBEAF0;color:#72243E" onclick="addTag('Escolar','#FBEAF0','#72243E')">Escolar</span>
+    </div>
+    <div class="custom-input-row">
+      <input id="custom-tag-input" placeholder="Tag personalizado…">
+      <select id="custom-tag-color">
+        <option value="#E6F1FB|#0C447C">Azul</option>
+        <option value="#EEEDFE|#3C3489">Morado</option>
+        <option value="#EAF3DE|#27500A">Verde</option>
+        <option value="#FAEEDA|#633806">Ámbar</option>
+        <option value="#E1F5EE|#085041">Teal</option>
+        <option value="#FAECE7|#993C1D">Coral</option>
+        <option value="#FBEAF0|#72243E">Rosa</option>
+        <option value="#F1EFE8|#444441">Gris</option>
+      </select>
+      <button class="btn btn-sec btn-sm" onclick="addCustomTag()">+ Añadir</button>
+    </div>
+    <div class="tags-area" id="selected-tags" style="margin-top:8px">
+      <span class="tag-empty">Ningún tag seleccionado</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Observación -->
+  <div class="field">
+    <label>Observación libre</label>
+    <textarea id="obs" placeholder="Detalles adicionales, comportamiento, contexto…"></textarea>
+  </div>
+
+  <!-- Guardar -->
+  <div class="btn-row">
+    <button class="btn" style="flex:1" onclick="saveRecord()">Guardar registro</button>
+    <button class="btn btn-sec" onclick="clearForm()">Limpiar</button>
+  </div>
+  <div class="save-msg" id="save-msg"></div>
+
+</div>
+
+<!-- ══════════ DATOS ══════════ -->
+<div id="tab-datos" class="section">
+  <div class="section-header">
+    <span style="font-size:14px;font-weight:600" id="rec-count-label">0 registros</span>
+    <button class="btn btn-sm btn-danger" onclick="clearAll()">Borrar todo</button>
+  </div>
+  <div id="records-list">
+    <div class="empty"><div class="empty-icon">📋</div>Aún no hay registros.</div>
+  </div>
+</div>
+
+<!-- ══════════ MÉTRICAS ══════════ -->
+<div id="tab-metricas" class="section">
+  <div id="metrics-content">
+    <div class="empty"><div class="empty-icon">📊</div>Agrega registros para ver métricas.</div>
+  </div>
+</div>
+
+<!-- ══════════ NUBE ══════════ -->
+<div id="tab-nube" class="section">
+  <div class="info-box">Conecta esta herramienta con Google Sheets para guardar cada registro automáticamente en la nube.</div>
+  <div class="field">
+    <label>URL de tu Google Apps Script</label>
+    <input id="script-url" placeholder="https://script.google.com/macros/s/…" style="font-size:13px">
+  </div>
+  <div class="btn-row" style="margin-bottom:12px">
+    <button class="btn btn-sec btn-sm" onclick="testConnection()">Probar conexión</button>
+    <button class="btn btn-sec btn-sm" onclick="syncAll()">Sincronizar todos →</button>
+  </div>
+  <div id="cloud-msg" style="font-size:13px;margin-bottom:14px;display:none;padding:9px 12px;border-radius:6px"></div>
+
+  <div class="divider"></div>
+  <p style="font-size:13px;font-weight:600;margin-bottom:12px">Cómo configurar Google Apps Script</p>
+
+  <div class="cloud-step"><div class="cloud-num">1</div><div class="cloud-text">Ve a <strong>script.google.com</strong> → "Nuevo proyecto"</div></div>
+  <div class="cloud-step"><div class="cloud-num">2</div><div class="cloud-text">Borra todo el código y pega este script:</div></div>
+
+  <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px">
+    <pre id="script-code" style="font-size:10px;font-family:'DM Mono',monospace;white-space:pre-wrap;color:var(--text2);line-height:1.55">const SHEET_NAME = 'Registros';
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      sheet = ss.insertSheet(SHEET_NAME);
+      sheet.appendRow(['Fecha','Hora','Tipo','Marca','Modelo',
+        'Sexo','Edad','Lugar','Color','Tags','Observación']);
+    }
+    sheet.appendRow([
+      data.fecha, data.hora, data.tipo, data.marca,
+      data.modelo, data.sexo, data.edad, data.lugar,
+      data.color, data.tags, data.obs
+    ]);
+    return ContentService
+      .createTextOutput(JSON.stringify({status:'ok'}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({status:'error',msg:err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({status:'ok',msg:'Conectado'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+  </div>
+  <button class="btn btn-sec btn-sm" onclick="copyScript()" id="copy-script-btn" style="width:100%;margin-bottom:12px">Copiar código del script</button>
+  <div id="copy-script-msg" style="font-size:12px;color:var(--green);display:none;margin-bottom:10px">Código copiado ✓</div>
+
+  <div class="cloud-step"><div class="cloud-num">3</div><div class="cloud-text">Haz clic en <strong>Implementar → Nueva implementación</strong> → Tipo: <code>Aplicación web</code></div></div>
+  <div class="cloud-step"><div class="cloud-num">4</div><div class="cloud-text">En "Quién tiene acceso" elige <code>Cualquier usuario</code> → <strong>Implementar</strong></div></div>
+  <div class="cloud-step"><div class="cloud-num">5</div><div class="cloud-text">Copia la URL generada y pégala en el campo de arriba</div></div>
+  <div class="cloud-step"><div class="cloud-num">6</div><div class="cloud-text">Los datos se guardarán automáticamente en la pestaña "Registros" de tu Google Sheet</div></div>
+</div>
+
+<!-- ══════════ EXPORTAR ══════════ -->
+<div id="tab-exportar" class="section">
+  <div class="btn-row" style="margin-bottom:12px">
+    <button class="btn" onclick="exportCSV()">Descargar CSV</button>
+    <button class="btn btn-sec" onclick="copyCSV()">Copiar CSV</button>
+    <button class="btn btn-sec" onclick="openSheets()">Google Sheets ↗</button>
+  </div>
+  <div id="copy-msg" style="font-size:13px;color:var(--green);display:none;margin-bottom:8px;font-weight:500">CSV copiado ✓</div>
+  <div>
+    <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px">Vista previa CSV</p>
+    <div class="csv-preview"><pre id="csv-preview"></pre></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- ══════════ MODAL EDITAR TAG ══════════ -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Editar tag</div>
+    <input class="modal-input" id="modal-name-input" placeholder="Nombre del tag">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:7px">Color</div>
+    <div class="color-select-grid" id="modal-color-grid">
+      <span class="color-sel-opt" data-bg="#E6F1FB" data-fg="#0C447C" style="background:#E6F1FB;color:#0C447C">Azul</span>
+      <span class="color-sel-opt" data-bg="#EEEDFE" data-fg="#3C3489" style="background:#EEEDFE;color:#3C3489">Morado</span>
+      <span class="color-sel-opt" data-bg="#EAF3DE" data-fg="#27500A" style="background:#EAF3DE;color:#27500A">Verde</span>
+      <span class="color-sel-opt" data-bg="#FAEEDA" data-fg="#633806" style="background:#FAEEDA;color:#633806">Ámbar</span>
+      <span class="color-sel-opt" data-bg="#E1F5EE" data-fg="#085041" style="background:#E1F5EE;color:#085041">Teal</span>
+      <span class="color-sel-opt" data-bg="#FAECE7" data-fg="#993C1D" style="background:#FAECE7;color:#993C1D">Coral</span>
+      <span class="color-sel-opt" data-bg="#FBEAF0" data-fg="#72243E" style="background:#FBEAF0;color:#72243E">Rosa</span>
+      <span class="color-sel-opt" data-bg="#F1EFE8" data-fg="#444441" style="background:#F1EFE8;color:#444441">Gris</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-sec btn-sm" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-sm" onclick="saveModalEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let records = JSON.parse(localStorage.getItem('mkt_records2')||'[]');
+let selectedColor='Negro', selectedColorHex='#1c1c1e';
+let selectedTags=[], selectedLugares=[];
+
+// Modal state
+let modalType='', modalIndex=-1, modalBg='#E6F1FB', modalFg='#0C447C';
+
+/* ── CLOCK ── */
+function updateClock(){
+  document.getElementById('clock-txt').textContent=new Date().toTimeString().slice(0,5);
+}
+updateClock(); setInterval(updateClock,10000);
+
+/* ── TABS ── */
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='metricas') renderMetrics();
+  if(name==='datos') renderRecords();
+  if(name==='exportar') renderCSV();
+}
+
+/* ── COLOR SWATCHES ── */
+document.querySelectorAll('.swatch:not(#custom-color-swatch)').forEach(sw=>{
+  sw.addEventListener('click',function(){
+    document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+    this.classList.add('sel');
+    selectedColor=this.dataset.color;
+    selectedColorHex=this.style.background;
+    document.getElementById('color-name-txt').textContent=selectedColor;
+  });
+});
+document.getElementById('color-picker-input').addEventListener('input',function(){
+  const hex=this.value;
+  const cs=document.getElementById('custom-color-swatch');
+  cs.style.background=hex; cs.dataset.color=hex;
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+  cs.classList.add('sel');
+  selectedColor=hex; selectedColorHex=hex;
+  document.getElementById('color-name-txt').textContent=hex;
+});
+
+/* ── LUGARES ── */
+function addLugar(name,bg,color){
+  if(selectedLugares.find(l=>l.name===name)) return;
+  selectedLugares.push({name,bg,color}); renderSelectedLugares();
+}
+function addCustomLugar(){
+  const inp=document.getElementById('custom-lugar-input');
+  const clr=document.getElementById('custom-lugar-color').value.split('|');
+  const name=inp.value.trim(); if(!name) return;
+  addLugar(name,clr[0],clr[1]); inp.value='';
+}
+function removeLugar(i){ selectedLugares.splice(i,1); renderSelectedLugares(); }
+function editLugar(i){ openModal('lugar',i,selectedLugares[i]); }
+function renderSelectedLugares(){
+  const el=document.getElementById('selected-lugares');
+  if(!selectedLugares.length){ el.innerHTML='<span class="tag-empty">Ning\u00FAn lugar seleccionado</span>'; return; }
+  el.innerHTML=selectedLugares.map((l,i)=>
+    `<span class="tag" style="background:${l.bg};color:${l.color}">
+      <span class="edit-icon" title="Editar" onclick="editLugar(${i})">&#9998;</span>
+      ${l.name}
+      <span class="x" onclick="removeLugar(${i})">&#x2715;</span>
+    </span>`).join('');
+}
+
+/* ── TAGS ── */
+function addTag(name,bg,color){
+  if(selectedTags.find(t=>t.name===name)) return;
+  selectedTags.push({name,bg,color}); renderSelectedTags();
+}
+function addCustomTag(){
+  const inp=document.getElementById('custom-tag-input');
+  const clr=document.getElementById('custom-tag-color').value.split('|');
+  const name=inp.value.trim(); if(!name) return;
+  addTag(name,clr[0],clr[1]); inp.value='';
+}
+function removeTag(i){ selectedTags.splice(i,1); renderSelectedTags(); }
+function editTag(i){ openModal('tag',i,selectedTags[i]); }
+function renderSelectedTags(){
+  const el=document.getElementById('selected-tags');
+  if(!selectedTags.length){ el.innerHTML='<span class="tag-empty">Ningún tag seleccionado</span>'; return; }
+  el.innerHTML=selectedTags.map((t,i)=>
+    `<span class="tag" style="background:${t.bg};color:${t.color}">
+      <span class="edit-icon" title="Editar" onclick="editTag(${i})">✎</span>
+      ${t.name}
+      <span class="x" onclick="removeTag(${i})">✕</span>
+    </span>`).join('');
+}
+
+/* ── MODAL EDITAR TAG/LUGAR ── */
+function openModal(type,index,item){
+  modalType=type; modalIndex=index;
+  modalBg=item.bg; modalFg=item.fg||item.color;
+  document.getElementById('modal-title').textContent=type==='tag'?'Editar tag':'Editar lugar';
+  document.getElementById('modal-name-input').value=item.name;
+  // mark chosen color
+  document.querySelectorAll('.color-sel-opt').forEach(opt=>{
+    opt.classList.toggle('chosen', opt.dataset.bg===modalBg);
+  });
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('edit-modal').classList.remove('open');
+}
+function saveModalEdit(){
+  const name=document.getElementById('modal-name-input').value.trim();
+  if(!name){ closeModal(); return; }
+  const item={name, bg:modalBg, color:modalFg};
+  if(modalType==='tag'){ selectedTags[modalIndex]=item; renderSelectedTags(); }
+  else { selectedLugares[modalIndex]=item; renderSelectedLugares(); }
+  closeModal();
+}
+// Color selection inside modal
+document.querySelectorAll('.color-sel-opt').forEach(opt=>{
+  opt.addEventListener('click',function(){
+    document.querySelectorAll('.color-sel-opt').forEach(o=>o.classList.remove('chosen'));
+    this.classList.add('chosen');
+    modalBg=this.dataset.bg; modalFg=this.dataset.fg;
+  });
+});
+// Close modal on overlay click
+document.getElementById('edit-modal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+
+/* ── SAVE RECORD ── */
+function saveRecord(){
+  const tipo=document.getElementById('tipo').value;
+  if(!tipo){ alert('Selecciona un tipo de producto.'); return; }
+  const now=new Date();
+  const rec={
+    id:Date.now(), fecha:now.toLocaleDateString('es-PE'), hora:now.toTimeString().slice(0,5),
+    tipo, marca:document.getElementById('marca').value.trim(),
+    modelo:document.getElementById('modelo').value.trim(),
+    sexo:document.getElementById('sexo').value,
+    edad:document.getElementById('edad').value,
+    lugar:selectedLugares.map(l=>l.name).join(', '),
+    lugaresData:JSON.parse(JSON.stringify(selectedLugares)),
+    color:selectedColor, colorHex:selectedColorHex,
+    tags:selectedTags.map(t=>t.name).join(', '),
+    tagsData:JSON.parse(JSON.stringify(selectedTags)),
+    obs:document.getElementById('obs').value.trim(), synced:false
+  };
+  records.unshift(rec); save(); sendToCloud(rec);
+  const msg=document.getElementById('save-msg');
+  msg.textContent=`✓ Registro guardado — ${rec.hora}`; msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',2500);
+  clearForm();
+}
+
+function clearForm(){
+  ['tipo','sexo','edad','obs'].forEach(id=>document.getElementById(id).value='');
+  ['marca','modelo'].forEach(id=>document.getElementById(id).value='');
+  selectedTags=[]; selectedLugares=[];
+  renderSelectedTags(); renderSelectedLugares();
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+  document.querySelector('.swatch[data-color="Negro"]').classList.add('sel');
+  selectedColor='Negro'; selectedColorHex='#1c1c1e';
+  document.getElementById('color-name-txt').textContent='Negro';
+}
+
+/* ── STORAGE ── */
+function save(){ localStorage.setItem('mkt_records2',JSON.stringify(records)); }
+
+/* ── CLOUD ── */
+async function sendToCloud(rec){
+  const url=document.getElementById('script-url').value.trim(); if(!url) return;
+  try {
+    await fetch(url,{method:'POST',body:JSON.stringify({fecha:rec.fecha,hora:rec.hora,tipo:rec.tipo,marca:rec.marca,modelo:rec.modelo,sexo:rec.sexo,edad:rec.edad,lugar:rec.lugar,color:rec.color,tags:rec.tags,obs:rec.obs})});
+    rec.synced=true; save();
+  } catch(e){}
+}
+async function testConnection(){
+  const url=document.getElementById('script-url').value.trim();
+  const msg=document.getElementById('cloud-msg');
+  if(!url){showCloudMsg('Ingresa la URL primero.','#C0392B','#FDECEA');return;}
+  showCloudMsg('Probando conexión…','#444','var(--bg)');
+  try{
+    const r=await fetch(url); const d=await r.json();
+    if(d.status==='ok') showCloudMsg('Conexión exitosa ✓','#1D7A52','#E3F5EC');
+    else showCloudMsg('Respuesta: '+JSON.stringify(d),'#444','var(--bg)');
+  } catch(e){showCloudMsg('Error de conexión. Verifica la URL y los permisos.','#C0392B','#FDECEA');}
+}
+async function syncAll(){
+  const url=document.getElementById('script-url').value.trim();
+  if(!url){showCloudMsg('Ingresa la URL primero.','#C0392B','#FDECEA');return;}
+  const pending=records.filter(r=>!r.synced);
+  if(!pending.length){showCloudMsg('Todo ya está sincronizado.','#1D7A52','#E3F5EC');return;}
+  showCloudMsg(`Sincronizando ${pending.length} registros…`,'#444','var(--bg)');
+  for(const rec of pending) await sendToCloud(rec);
+  save(); showCloudMsg(`${pending.length} registros enviados a Google Sheets.`,'#1D7A52','#E3F5EC');
+}
+function showCloudMsg(txt,color,bg){
+  const m=document.getElementById('cloud-msg');
+  m.style.display='block'; m.style.color=color; m.style.background=bg;
+  m.style.padding='9px 12px'; m.style.borderRadius='6px';
+  m.textContent=txt;
+}
+function copyScript(){
+  navigator.clipboard.writeText(document.getElementById('script-code').textContent).then(()=>{
+    document.getElementById('copy-script-btn').textContent='Código copiado ✓';
+    document.getElementById('copy-script-msg').style.display='block';
+    setTimeout(()=>{
+      document.getElementById('copy-script-msg').style.display='none';
+      document.getElementById('copy-script-btn').textContent='Copiar código del script';
+    },2500);
+  });
+}
+
+/* ── RECORDS ── */
+function renderRecords(){
+  const el=document.getElementById('records-list');
+  document.getElementById('rec-count-label').textContent=records.length+' registro'+(records.length!==1?'s':'');
+  if(!records.length){ el.innerHTML='<div class="empty"><div class="empty-icon">📋</div>Aún no hay registros.</div>'; return; }
+  el.innerHTML=records.map(r=>`
+    <div class="record-card">
+      <div class="rec-main">
+        <div class="rec-top">
+          <span class="rec-tipo">${r.tipo}</span>
+          ${r.marca?`<span class="rec-meta">${r.marca}</span>`:''}
+          ${r.modelo?`<span class="rec-meta">${r.modelo}</span>`:''}
+          ${r.synced?`<span class="sync-badge">☁</span>`:''}
+          <span class="rec-meta" style="margin-left:auto">${r.fecha} ${r.hora}</span>
+        </div>
+        ${(r.sexo||r.edad)?`<div class="rec-detail">${[r.sexo,r.edad].filter(Boolean).join(' · ')}</div>`:''}
+        ${(r.lugaresData||[]).length||(r.tagsData||[]).length?`
+        <div class="rec-tags">
+          ${(r.lugaresData||[]).map(l=>`<span class="tag" style="background:${l.bg};color:${l.color};font-size:11px;padding:2px 7px">${l.name}</span>`).join('')}
+          ${(r.tagsData||[]).map(t=>`<span class="tag" style="background:${t.bg};color:${t.color};font-size:11px;padding:2px 7px">${t.name}</span>`).join('')}
+        </div>`:''}
+        ${r.obs?`<div class="rec-obs">"${r.obs}"</div>`:''}
+      </div>
+      <button class="rec-del" onclick="deleteRecord(${r.id})">✕</button>
+    </div>`).join('');
+}
+function deleteRecord(id){ records=records.filter(r=>r.id!==id); save(); renderRecords(); }
+function clearAll(){
+  if(confirm('¿Borrar todos los registros? Esta acción no se puede deshacer.')){
+    records=[]; save(); renderRecords();
+  }
+}
+
+/* ── METRICS ── */
+function count(arr,key){ return arr.reduce((acc,r)=>{ const v=r[key]||'—'; acc[v]=(acc[v]||0)+1; return acc; },{}); }
+function renderMetrics(){
+  const el=document.getElementById('metrics-content');
+  if(!records.length){ el.innerHTML='<div class="empty"><div class="empty-icon">📊</div>Agrega registros para ver métricas.</div>'; return; }
+  const n=records.length;
+  const tipos=count(records,'tipo'),marcas=count(records,'marca'),edades=count(records,'edad'),sexos=count(records,'sexo'),colores=count(records,'color');
+  const lugarMap={},tagMap={},horario={};
+  records.forEach(r=>{
+    (r.lugaresData||[]).forEach(l=>{ lugarMap[l.name]=(lugarMap[l.name]||0)+1; });
+    (r.tagsData||[]).forEach(t=>{ tagMap[t.name]=(tagMap[t.name]||0)+1; });
+    if(r.hora){ const h=parseInt(r.hora); const s=h<12?'Mañana':h<17?'Tarde':h<21?'Noche temprana':'Noche'; horario[s]=(horario[s]||0)+1; }
+  });
+  const topTipo=Object.entries(tipos).sort((a,b)=>b[1]-a[1])[0];
+  const topMarca=Object.entries(marcas).filter(([k])=>k&&k!=='—').sort((a,b)=>b[1]-a[1])[0];
+  const topEdad=Object.entries(edades).filter(([k])=>k&&k!=='—').sort((a,b)=>b[1]-a[1])[0];
+  const topColor=Object.entries(colores).filter(([k])=>k&&k!=='—').sort((a,b)=>b[1]-a[1])[0];
+  const cable=records.filter(r=>r.tipo==='Audífonos con cable').length;
+  const inal=records.filter(r=>r.tipo==='Audífonos inalámbricos').length;
+  const insights=[];
+  if(inal+cable>0) insights.push(inal>=cable?`Prefieren inalámbricos <strong>${Math.round(inal/(inal+cable)*100)}%</strong> vs cable ${Math.round(cable/(inal+cable)*100)}%.`:`Prefieren con cable <strong>${Math.round(cable/(inal+cable)*100)}%</strong>.`);
+  if(topEdad) insights.push(`Edad más frecuente: <strong>${topEdad[0]}</strong> (${topEdad[1]} obs.)`);
+  if(topColor) insights.push(`Color más popular: <strong>${topColor[0]}</strong>`);
+  if(topMarca) insights.push(`Marca más vista: <strong>${topMarca[0]}</strong>`);
+
+  function barChart(data,title,color){
+    const sorted=Object.entries(data).filter(([k])=>k&&k!=='—').sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const max=Math.max(...sorted.map(s=>s[1]),1);
+    if(!sorted.length) return '';
+    return `<div class="chart-box">
+      <div class="chart-title">${title}</div>
+      ${sorted.map(([k,v])=>`<div class="bar-row">
+        <div class="bar-label" title="${k}">${k}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%;background:${color}"></div></div>
+        <div class="bar-count">${v}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  el.innerHTML=`
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="metric-label">Total obs.</div><div class="metric-val">${n}</div></div>
+      <div class="metric-card"><div class="metric-label">Producto top</div><div class="metric-val" style="font-size:13px">${topTipo?topTipo[0]:'—'}</div></div>
+      <div class="metric-card"><div class="metric-label">Marca top</div><div class="metric-val" style="font-size:13px">${topMarca?topMarca[0]:'—'}</div></div>
+      <div class="metric-card"><div class="metric-label">Color top</div><div class="metric-val" style="font-size:13px">${topColor?topColor[0]:'—'}</div></div>
+    </div>
+    ${insights.length?`<div class="insight-card"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px">Insights</div>${insights.map(i=>`<div style="font-size:13px;color:var(--text2);margin-bottom:4px;line-height:1.4">· ${i}</div>`).join('')}</div>`:''}
+    ${barChart(tipos,'Productos','#378ADD')}
+    ${barChart(marcas,'Marcas','#BA7517')}
+    ${barChart(edades,'Edades','#BF5AF2')}
+    ${barChart(sexos,'Sexo','#D4537E')}
+    ${barChart(colores,'Colores','#1D9E75')}
+    ${barChart(horario,'Horario','#E24B4A')}
+    ${Object.keys(lugarMap).length?barChart(lugarMap,'Lugares','#0F6E56'):''}
+    ${Object.keys(tagMap).length?barChart(tagMap,'Tags','#534AB7'):''}
+  `;
+}
+
+/* ── EXPORT ── */
+function getCSV(){
+  const h=['Fecha','Hora','Tipo','Marca','Modelo','Sexo','Edad','Lugar','Color','Tags','Observación'];
+  const rows=records.map(r=>[r.fecha,r.hora,r.tipo,r.marca,r.modelo,r.sexo,r.edad,r.lugar,r.color,r.tags,r.obs].map(v=>'"'+(v||'').replace(/"/g,'""')+'"').join(','));
+  return [h.join(','),...rows].join('\n');
+}
+function renderCSV(){
+  document.getElementById('csv-preview').textContent=getCSV().split('\n').slice(0,8).join('\n')+(records.length>7?'\n…':'');
+}
+function exportCSV(){
+  const b=new Blob([getCSV()],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download='estudio_mercado.csv'; a.click();
+}
+function copyCSV(){
+  navigator.clipboard.writeText(getCSV()).then(()=>{
+    const m=document.getElementById('copy-msg'); m.style.display='block';
+    setTimeout(()=>m.style.display='none',2500);
+  });
+}
+function openSheets(){ window.open('https://sheets.new','_blank'); }
+</script>
+</body>
+</html>
