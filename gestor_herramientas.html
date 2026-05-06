@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Mis Herramientas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f11;
+  --surface: #1a1a1f;
+  --surface2: #222228;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --accent: #7c6dfa;
+  --accent2: #a78bfa;
+  --accent-bg: rgba(124,109,250,0.12);
+  --text: #f0eeff;
+  --muted: #8884a0;
+  --muted2: #6a6680;
+  --danger: #f87171;
+  --danger-bg: rgba(248,113,113,0.1);
+  --success: #4ade80;
+  --success-bg: rgba(74,222,128,0.1);
+  --radius: 14px;
+  --radius-sm: 9px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+/* Layout */
+.app { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: 0 auto; }
+
+/* Header */
+.header {
+  padding: 1.2rem 1.25rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+.logo span { color: var(--accent2); }
+.tool-count-badge { background: var(--accent-bg); color: var(--accent2); font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(124,109,250,0.2); }
+
+/* Nav tabs */
+.nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.nav-btn:hover { color: var(--text); background: var(--surface); }
+.nav-btn.active { color: var(--accent2); background: var(--accent-bg); border-color: rgba(124,109,250,0.25); }
+
+/* Content area */
+.content { flex: 1; overflow-y: auto; padding: 1.1rem 1.25rem 5rem; }
+.content::-webkit-scrollbar { width: 3px; }
+.content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* Section visibility */
+.section { display: none; }
+.section.active { display: block; }
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.empty-icon { font-size: 42px; margin-bottom: 1rem; opacity: 0.6; }
+.empty h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+.empty p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* Tool card */
+.tool-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.tool-card:hover { border-color: var(--border2); }
+.tool-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.tool-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--accent-bg);
+  border: 1px solid rgba(124,109,250,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.tool-info { flex: 1; min-width: 0; }
+.tool-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tool-desc { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tool-date { font-size: 11px; color: var(--muted2); margin-top: 3px; }
+.tool-actions { display: flex; gap: 6px; }
+.action-btn {
+  flex: 1; padding: 8px 6px;
+  font-size: 12px; font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: 'DM Sans', sans-serif;
+}
+.action-btn:hover { background: var(--surface2); color: var(--text); }
+.action-btn.open-btn { color: var(--accent2); border-color: rgba(124,109,250,0.3); background: var(--accent-bg); }
+.action-btn.open-btn:hover { background: rgba(124,109,250,0.2); }
+.action-btn.del-btn { color: var(--danger); border-color: rgba(248,113,113,0.2); }
+.action-btn.del-btn:hover { background: var(--danger-bg); }
+
+/* Form */
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+.form-input, .form-textarea {
+  width: 100%; padding: 11px 14px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  outline: none; transition: border-color 0.2s;
+}
+.form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { min-height: 130px; resize: vertical; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.5; }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--muted2); }
+input[type="file"] { display: none; }
+.file-label {
+  display: block; width: 100%; padding: 11px 14px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); color: var(--muted);
+  font-size: 13px; cursor: pointer; transition: border-color 0.2s;
+  text-align: center;
+}
+.file-label:hover { border-color: var(--accent); color: var(--text); }
+.file-label.has-file { color: var(--success); border-color: rgba(74,222,128,0.3); background: var(--success-bg); }
+
+/* Buttons */
+.btn-main {
+  width: 100%; padding: 13px;
+  background: var(--accent);
+  color: #fff; font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 700;
+  border: none; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.2s;
+  letter-spacing: 0.2px;
+}
+.btn-main:hover { background: #6a5ce8; transform: translateY(-1px); }
+.btn-main:active { transform: scale(0.98); }
+.btn-main.danger-btn { background: var(--danger); }
+.btn-main.danger-btn:hover { background: #ef4444; }
+
+/* Info box */
+.info-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1rem;
+  margin-bottom: 16px;
+}
+.info-box p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.info-box strong { color: var(--text); }
+
+/* Export tool list */
+.export-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.export-item:last-child { border-bottom: none; }
+.export-item label { flex: 1; font-size: 14px; color: var(--text); cursor: pointer; }
+.export-item .chk-box {
+  width: 20px; height: 20px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.select-all-row { display: flex; align-items: center; gap: 10px; padding: 6px 0 10px; border-bottom: 1px solid var(--border2); margin-bottom: 4px; }
+.select-all-row label { font-size: 13px; color: var(--muted); cursor: pointer; font-weight: 500; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #2a2a30; color: var(--text);
+  padding: 10px 20px; border-radius: 30px;
+  font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border2);
+  opacity: 0; transition: all 0.3s;
+  pointer-events: none; z-index: 999;
+  white-space: nowrap; box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.ok { border-color: rgba(74,222,128,0.3); }
+.toast.err { border-color: rgba(248,113,113,0.3); color: var(--danger); }
+
+/* Divider */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* Section title */
+.section-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.section-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+
+/* Emoji picker */
+.emoji-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.emoji-opt { font-size: 22px; cursor: pointer; padding: 6px; border-radius: 8px; border: 1px solid transparent; transition: all 0.15s; }
+.emoji-opt:hover { background: var(--surface2); }
+.emoji-opt.selected { background: var(--accent-bg); border-color: rgba(124,109,250,0.3); }
+
+/* FAB */
+.fab {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  width: 52px; height: 52px;
+  background: var(--accent);
+  border: none; border-radius: 50%;
+  font-size: 26px; color: #fff;
+  cursor: pointer; box-shadow: 0 4px 20px rgba(124,109,250,0.45);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; z-index: 10;
+}
+.fab:hover { transform: scale(1.08); }
+.fab:active { transform: scale(0.95); }
+
+/* Password strength */
+.pwd-strength { height: 3px; border-radius: 3px; margin-top: 6px; background: var(--border2); overflow: hidden; }
+.pwd-bar { height: 100%; border-radius: 3px; transition: all 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">Tool<span>Box</span></div>
+      <span class="tool-count-badge" id="count-badge">0 herramientas</span>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="showTab('tools',this)">📦 Mis tools</button>
+      <button class="nav-btn" onclick="showTab('add',this)">✏️ Agregar</button>
+      <button class="nav-btn" onclick="showTab('export',this)">📤 Exportar</button>
+      <button class="nav-btn" onclick="showTab('import',this)">📥 Importar</button>
+    </nav>
+  </div>
+
+  <div class="content">
+
+    <!-- MIS TOOLS -->
+    <div id="tab-tools" class="section active">
+      <div id="tools-list"></div>
+    </div>
+
+    <!-- AGREGAR -->
+    <div id="tab-add" class="section">
+      <div class="section-title">Nueva herramienta</div>
+      <div class="section-sub">Pega aquí el código HTML que yo te genere</div>
+
+      <div class="form-group">
+        <label class="form-label">Ícono</label>
+        <div class="emoji-row" id="emoji-row">
+          <span class="emoji-opt selected" data-e="🧮" onclick="selectEmoji(this)">🧮</span>
+          <span class="emoji-opt" data-e="📊" onclick="selectEmoji(this)">📊</span>
+          <span class="emoji-opt" data-e="📝" onclick="selectEmoji(this)">📝</span>
+          <span class="emoji-opt" data-e="🎨" onclick="selectEmoji(this)">🎨</span>
+          <span class="emoji-opt" data-e="💰" onclick="selectEmoji(this)">💰</span>
+          <span class="emoji-opt" data-e="📅" onclick="selectEmoji(this)">📅</span>
+          <span class="emoji-opt" data-e="🔧" onclick="selectEmoji(this)">🔧</span>
+          <span class="emoji-opt" data-e="⚡" onclick="selectEmoji(this)">⚡</span>
+          <span class="emoji-opt" data-e="🎯" onclick="selectEmoji(this)">🎯</span>
+          <span class="emoji-opt" data-e="📱" onclick="selectEmoji(this)">📱</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nombre de la herramienta</label>
+        <input class="form-input" id="new-name" type="text" placeholder="Ej: Calculadora de IGV" maxlength="60" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción corta</label>
+        <input class="form-input" id="new-desc" type="text" placeholder="Para qué sirve..." maxlength="100" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Código HTML</label>
+        <textarea class="form-textarea" id="new-code" placeholder="Pega aquí el código HTML completo..."></textarea>
+      </div>
+      <button class="btn-main" onclick="addTool()">Guardar herramienta</button>
+    </div>
+
+    <!-- EXPORTAR -->
+    <div id="tab-export" class="section">
+      <div class="section-title">Exportar</div>
+      <div class="section-sub">Descarga tus tools en un archivo protegido</div>
+
+      <div class="info-box">
+        <p>Se crea un archivo <strong>.html</strong> protegido con contraseña. Mándalo por WhatsApp o correo — quien lo recibe solo lo abre en el navegador y listo.</p>
+      </div>
+
+      <div id="export-list"></div>
+
+      <div class="divider"></div>
+
+      <div class="form-group">
+        <label class="form-label">Contraseña de protección</label>
+        <input class="form-input" id="exp-pwd" type="password" placeholder="Contraseña..." oninput="checkPwdStrength(this.value)" />
+        <div class="pwd-strength"><div class="pwd-bar" id="pwd-bar"></div></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar contraseña</label>
+        <input class="form-input" id="exp-pwd2" type="password" placeholder="Repite la contraseña..." />
+      </div>
+      <button class="btn-main" onclick="exportTools()">⬇️ Descargar archivo</button>
+    </div>
+
+    <!-- IMPORTAR -->
+    <div id="tab-import" class="section">
+      <div class="section-title">Importar</div>
+      <div class="section-sub">Agrega herramientas desde un archivo compartido</div>
+
+      <div class="info-box">
+        <p>¿Te mandaron un archivo de herramientas? Súbelo aquí, ingresa la contraseña y se agregarán automáticamente a tu colección.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Archivo exportado</label>
+        <input type="file" id="imp-file" accept=".html" onchange="updateFileLabel(this)" />
+        <label for="imp-file" class="file-label" id="file-label">📂 Tocar para elegir archivo .html</label>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña del archivo</label>
+        <input class="form-input" id="imp-pwd" type="password" placeholder="Contraseña..." />
+      </div>
+      <button class="btn-main" onclick="importTools()">📥 Importar herramientas</button>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const KEY = 'toolbox_v2';
+let selectedEmoji = '🧮';
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e) { return []; }
+}
+function save(tools) {
+  localStorage.setItem(KEY, JSON.stringify(tools));
+  updateBadge();
+}
+function updateBadge() {
+  const n = load().length;
+  document.getElementById('count-badge').textContent = n + (n===1?' herramienta':' herramientas');
+}
+
+function toast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 2600);
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'tools') renderTools();
+  if (name === 'export') renderExportList();
+}
+
+function selectEmoji(el) {
+  document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedEmoji = el.dataset.e;
+}
+
+function renderTools() {
+  const tools = load();
+  updateBadge();
+  const c = document.getElementById('tools-list');
+  if (!tools.length) {
+    c.innerHTML = `<div class="empty">
+      <div class="empty-icon">📭</div>
+      <h3>Sin herramientas aún</h3>
+      <p>Ve a "Agregar" y pega el código HTML<br>de cualquier herramienta que yo te cree.</p>
+    </div>`;
+    return;
+  }
+  c.innerHTML = tools.map((t, i) => `
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon">${t.icon||'🧮'}</div>
+        <div class="tool-info">
+          <div class="tool-name">${t.name}</div>
+          <div class="tool-desc">${t.desc||'Sin descripción'}</div>
+          <div class="tool-date">${new Date(t.date).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})}</div>
+        </div>
+      </div>
+      <div class="tool-actions">
+        <button class="action-btn open-btn" onclick="openTool(${i})">▶ Abrir</button>
+        <button class="action-btn" onclick="editTool(${i})">✏️ Editar</button>
+        <button class="action-btn del-btn" onclick="deleteTool(${i})">🗑 Borrar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openTool(i) {
+  const t = load()[i];
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${t.name}</title></head><body>${t.code}</body></html>`);
+  w.document.close();
+}
+
+function editTool(i) {
+  const tools = load();
+  const t = tools[i];
+  document.getElementById('new-name').value = t.name;
+  document.getElementById('new-desc').value = t.desc || '';
+  document.getElementById('new-code').value = t.code;
+  selectedEmoji = t.icon || '🧮';
+  document.querySelectorAll('.emoji-opt').forEach(e => {
+    e.classList.toggle('selected', e.dataset.e === selectedEmoji);
+  });
+  tools.splice(i,1);
+  save(tools);
+  showTab('add', document.querySelectorAll('.nav-btn')[1]);
+  toast('Listo para editar — guarda al terminar');
+}
+
+function deleteTool(i) {
+  if (!confirm('¿Borrar esta herramienta?')) return;
+  const tools = load();
+  tools.splice(i,1);
+  save(tools);
+  renderTools();
+  toast('Herramienta eliminada');
+}
+
+function addTool() {
+  const name = document.getElementById('new-name').value.trim();
+  const desc = document.getElementById('new-desc').value.trim();
+  const code = document.getElementById('new-code').value.trim();
+  if (!name) { toast('Escribe un nombre', 'err'); return; }
+  if (!code) { toast('Pega el código HTML', 'err'); return; }
+  const tools = load();
+  tools.unshift({ name, desc, code, icon: selectedEmoji, date: Date.now() });
+  save(tools);
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-desc').value = '';
+  document.getElementById('new-code').value = '';
+  toast('✅ Herramienta guardada');
+  showTab('tools', document.querySelectorAll('.nav-btn')[0]);
+}
+
+function renderExportList() {
+  const tools = load();
+  const c = document.getElementById('export-list');
+  if (!tools.length) { c.innerHTML = '<div class="empty-state" style="color:var(--muted);font-size:14px;padding:1rem 0;">No hay herramientas para exportar.</div>'; return; }
+  c.innerHTML = `
+    <div class="select-all-row">
+      <input type="checkbox" class="chk-box" id="chk-all" checked onchange="toggleAll(this)">
+      <label for="chk-all">Seleccionar todas</label>
+    </div>
+    ${tools.map((t,i) => `
+      <div class="export-item">
+        <input type="checkbox" class="chk-box" id="ck${i}" value="${i}" checked>
+        <label for="ck${i}">${t.icon||'🧮'} ${t.name}</label>
+      </div>
+    `).join('')}
+  `;
+}
+
+function toggleAll(chk) {
+  document.querySelectorAll('#export-list .chk-box:not(#chk-all)').forEach(c => c.checked = chk.checked);
+}
+
+function checkPwdStrength(v) {
+  const bar = document.getElementById('pwd-bar');
+  let s = 0;
+  if (v.length >= 6) s++;
+  if (v.length >= 10) s++;
+  if (/[A-Z]/.test(v) && /[0-9]/.test(v)) s++;
+  const w = ['0%','33%','66%','100%'][s];
+  const cl = ['#f87171','#fb923c','#facc15','#4ade80'][s];
+  bar.style.width = w; bar.style.background = cl;
+}
+
+async function hashStr(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function enc(s) { return btoa(unescape(encodeURIComponent(s))); }
+function dec(s) { try { return decodeURIComponent(escape(atob(s))); } catch(e) { return null; } }
+
+async function exportTools() {
+  const p1 = document.getElementById('exp-pwd').value;
+  const p2 = document.getElementById('exp-pwd2').value;
+  if (!p1) { toast('Escribe una contraseña', 'err'); return; }
+  if (p1 !== p2) { toast('Las contraseñas no coinciden', 'err'); return; }
+
+  const tools = load();
+  const selected = tools.filter((_, i) => {
+    const el = document.getElementById('ck'+i);
+    return el && el.checked;
+  });
+  if (!selected.length) { toast('Selecciona al menos una herramienta', 'err'); return; }
+
+  const hash = await hashStr(p1);
+  const payload = enc(JSON.stringify(selected));
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Herramientas Protegidas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#0f0f11;--surface:#1a1a1f;--surface2:#222228;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6dfa;--accent2:#a78bfa;--accent-bg:rgba(124,109,250,0.12);--text:#f0eeff;--muted:#8884a0;--danger:#f87171;--success:#4ade80;--success-bg:rgba(74,222,128,0.1);--radius:14px;--radius-sm:9px;}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.box{width:100%;max-width:420px;}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;}
+.logo span{color:var(--accent2);}
+.sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;}
+label{display:block;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+input{width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:12px;}
+input:focus{border-color:var(--accent);}
+input::placeholder{color:#6a6680;}
+button{width:100%;padding:13px;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:8px;}
+button:hover{background:#6a5ce8;}
+.msg{font-size:13px;color:var(--danger);text-align:center;min-height:18px;margin-top:6px;}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;margin-bottom:10px;}
+.t-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.t-icon{width:36px;height:36px;border-radius:9px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.t-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+.t-desc{font-size:12px;color:var(--muted);margin-top:2px;}
+.t-btn{width:100%;padding:9px;background:var(--accent-bg);color:var(--accent2);border:1px solid rgba(124,109,250,0.25);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;}
+.t-btn:hover{background:rgba(124,109,250,0.2);}
+.hidden{display:none;}
+.badge{display:inline-block;background:var(--success-bg);color:var(--success);font-size:12px;padding:3px 10px;border-radius:20px;border:1px solid rgba(74,222,128,0.2);margin-bottom:1rem;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div id="login-view">
+    <div class="logo">Tool<span>Box</span></div>
+    <div class="sub">Archivo protegido — ingresa la contraseña para acceder</div>
+    <label>Contraseña</label>
+    <input type="password" id="pwd" placeholder="Contraseña..." onkeydown="if(event.key==='Enter')unlock()">
+    <button onclick="unlock()">🔓 Acceder</button>
+    <div class="msg" id="msg"></div>
+  </div>
+  <div id="tools-view" class="hidden">
+    <div class="logo">Tool<span>Box</span></div>
+    <div class="badge" id="cnt"></div>
+    <div id="tlist"></div>
+  </div>
+</div>
+<script>
+const H='${hash}',D='${payload}';
+async function hashStr(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+function dec(s){try{return JSON.parse(decodeURIComponent(escape(atob(s))));}catch(e){return null;}}
+async function unlock(){
+  const p=document.getElementById('pwd').value;
+  if(!p){document.getElementById('msg').textContent='Escribe la contraseña';return;}
+  const h=await hashStr(p);
+  if(h!==H){document.getElementById('msg').textContent='Contraseña incorrecta ❌';return;}
+  const tools=dec(D);
+  if(!tools){document.getElementById('msg').textContent='Error al leer datos';return;}
+  document.getElementById('login-view').classList.add('hidden');
+  const v=document.getElementById('tools-view');
+  v.classList.remove('hidden');
+  document.getElementById('cnt').textContent=tools.length+' herramienta'+(tools.length===1?'':'s')+' disponible'+(tools.length===1?'':'s');
+  document.getElementById('tlist').innerHTML=tools.map((t,i)=>\`<div class="tool-card"><div class="t-header"><div class="t-icon">\${t.icon||'🧮'}</div><div><div class="t-name">\${t.name}</div><div class="t-desc">\${t.desc||''}</div></div></div><button class="t-btn" onclick="open_(\${i})">▶ Abrir herramienta</button></div>\`).join('');
+  window._tools=tools;
+}
+function open_(i){const t=window._tools[i];const w=window.open('','_blank');w.document.write(\`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>\${t.name}</title></head><body>\${t.code}</body></html>\`);w.document.close();}
+<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mis_herramientas.html';
+  a.click();
+  toast('✅ Archivo descargado');
+}
+
+function updateFileLabel(input) {
+  const lbl = document.getElementById('file-label');
+  if (input.files.length) {
+    lbl.textContent = '✅ ' + input.files[0].name;
+    lbl.classList.add('has-file');
+  } else {
+    lbl.textContent = '📂 Tocar para elegir archivo .html';
+    lbl.classList.remove('has-file');
+  }
+}
+
+async function importTools() {
+  const file = document.getElementById('imp-file').files[0];
+  const pwd = document.getElementById('imp-pwd').value;
+  if (!file) { toast('Selecciona un archivo', 'err'); return; }
+  if (!pwd) { toast('Escribe la contraseña', 'err'); return; }
+
+  const text = await file.text();
+  const hm = text.match(/const H='([a-f0-9]{64})'/);
+  const dm = text.match(/const D='([A-Za-z0-9+\/=]+)'/);
+  if (!hm || !dm) { toast('Archivo no válido', 'err'); return; }
+
+  const inputHash = await hashStr(pwd);
+  if (inputHash !== hm[1]) { toast('Contraseña incorrecta ❌', 'err'); return; }
+
+  let imported;
+  try { imported = JSON.parse(dec(dm[1])); } catch(e) { toast('Error al leer el archivo', 'err'); return; }
+
+  const tools = load();
+  let added = 0;
+  imported.forEach(t => {
+    const exists = tools.some(e => e.name === t.name);
+    if (!exists) { tools.push({ ...t, date: Date.now() }); added++; }
+  });
+  save(tools);
+  toast(added > 0 ? '✅ '+added+' herramienta(s) importada(s)' : 'Ya tenías todas esas herramientas');
+  document.getElementById('imp-file').value = '';
+  document.getElementById('imp-pwd').value = '';
+  document.getElementById('file-label').textContent = '📂 Tocar para elegir archivo .html';
+  document.getElementById('file-label').classList.remove('has-file');
+  showTab('tools', document.querySelectorAll('.nav-btn')[0]);
+}
+
+// Init
+renderTools();
+</script>
+</body>
+</html>
