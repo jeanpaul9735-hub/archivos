@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Fechado</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg:     #0d0f18;
+  --card:   #161924;
+  --border: #252a3d;
+  --muted:  #5a6080;
+  --text:   #e2e6f8;
+
+  --lunes:     #3b82f6;
+  --martes:    #a855f7;
+  --miercoles: #ec4899;
+  --jueves:    #f59e0b;
+  --viernes:   #10b981;
+  --sabado:    #ef4444;
+  --domingo:   #f97316;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  display: flex; flex-direction: column; gap: 0.6rem;
+}
+.topbar-row1 {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.app-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem; font-weight: 800;
+  letter-spacing: -.02em;
+}
+.today-chip {
+  font-size: 0.78rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  color: var(--muted);
+}
+.today-chip strong { color: var(--text); font-weight: 500; }
+
+.search-wrap { position: relative; }
+.search-wrap input {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 0.9rem 0.65rem 2.4rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; color: var(--text);
+  outline: none;
+}
+.search-wrap input::placeholder { color: var(--muted); }
+.search-wrap input:focus { border-color: #3b82f6; }
+.search-icon {
+  position: absolute; left: 0.75rem; top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem; color: var(--muted);
+  pointer-events: none;
+}
+
+/* ── LIST ── */
+.list { padding: 0.5rem 1rem 0; }
+
+.list-item {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 0.55rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .15s;
+  user-select: none;
+  flex-wrap: wrap;
+}
+.list-item:active { opacity: .85; }
+.list-item.open { border-color: var(--day-color, #3b82f6); }
+
+.item-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Left color strip */
+.strip {
+  width: 5px; flex-shrink: 0;
+  align-self: stretch;
+  background: var(--day-color, #3b82f6);
+  min-height: 58px;
+}
+
+/* Main content */
+.item-body {
+  flex: 1;
+  padding: 0.75rem 0.9rem;
+  min-width: 0;
+}
+.item-name {
+  font-size: 0.88rem; font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.item-sub {
+  font-size: 0.72rem; color: var(--muted);
+  margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Right: date pill */
+.date-pill {
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+  text-align: right;
+}
+.date-pill .vence-dia {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--day-color, #3b82f6);
+}
+.date-pill .vence-fecha {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem; font-weight: 800;
+  color: var(--day-color, #3b82f6);
+  line-height: 1.1;
+}
+
+/* ── EXPANDED PANEL ── */
+.item-expand {
+  display: none;
+  width: 100%;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 1rem 1.1rem 1.1rem;
+}
+.list-item.open .item-expand { display: block; }
+
+.expand-big {
+  text-align: center;
+  padding: 0.6rem 0 0.9rem;
+}
+.expand-big .e-label {
+  font-size: 0.68rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 4px;
+}
+.expand-big .e-dia {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.6rem; font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--day-color, #3b82f6);
+}
+.expand-big .e-fecha {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--text);
+  margin-top: 6px;
+}
+
+.sticker-box {
+  background: var(--card);
+  border: 1px dashed var(--day-color, #3b82f6);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  margin-bottom: 0.8rem;
+}
+.sticker-box .slabel {
+  font-size: 0.65rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .05em;
+  margin-bottom: 4px;
+}
+.sticker-box .sval {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem; font-weight: 800;
+  color: var(--day-color, #3b82f6);
+  letter-spacing: .02em;
+}
+
+.expand-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.emeta-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+}
+.emeta-box .el { font-size: 0.63rem; color: var(--muted); text-transform: uppercase; letter-spacing:.04em; margin-bottom:2px; }
+.emeta-box .ev { font-size: 0.8rem; font-weight: 500; line-height: 1.3; }
+
+/* ── ADD FORM ── */
+.add-section {
+  margin: 1.2rem 1rem 0;
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+}
+.add-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem; font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 0.8rem;
+}
+.add-title span { color: var(--text); }
+
+.add-fields { display: flex; flex-direction: column; gap: 0.5rem; }
+.add-fields input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0.6rem 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; color: var(--text);
+  outline: none;
+}
+.add-fields input::placeholder { color: var(--muted); }
+.add-fields input:focus { border-color: #3b82f6; }
+
+.btn-save {
+  width: 100%;
+  margin-top: 0.5rem;
+  background: #3b82f6;
+  border: none; border-radius: 9px;
+  padding: 0.7rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 0.95rem;
+  color: #fff; cursor: pointer;
+  transition: opacity .15s;
+}
+.btn-save:active { opacity: .8; }
+
+/* ── DELETE ── */
+.btn-del {
+  background: none; border: none;
+  color: var(--muted); font-size: 1rem;
+  padding: 0 0.7rem; cursor: pointer;
+  flex-shrink: 0;
+  align-self: stretch;
+  display: flex; align-items: center;
+}
+.btn-del:hover { color: #ef4444; }
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 2.5rem 1rem;
+}
+
+/* ── Day legend ── */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 0.6rem 1rem;
+}
+.leg {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.7rem; color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 9px;
+}
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.section-label {
+  font-size: 0.7rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  padding: 0.3rem 1rem 0.2rem;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row1">
+    <div class="app-title">📅 Fechado</div>
+    <div class="today-chip" id="todayChip">...</div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Buscar producto…" oninput="render()" autocomplete="off" autocorrect="off" spellcheck="false">
+  </div>
+</div>
+
+<div class="legend" id="legend"></div>
+<div class="section-label">Toca el producto para ver el detalle</div>
+<div class="list" id="list"></div>
+
+<div class="add-section">
+  <div class="add-title">➕ <span>Agregar producto</span></div>
+  <div class="add-fields">
+    <input id="nNombre" type="text" placeholder="Nombre del producto" autocomplete="off">
+    <input id="nDias"   type="number" min="1" max="999" placeholder="Días de vida útil (ej: 7)">
+    <input id="nEnvase" type="text" placeholder="Tipo de envase (opcional)" autocomplete="off">
+    <button class="btn-save" onclick="addProd()">Guardar producto</button>
+  </div>
+</div>
+
+<script>
+const DEFAULTS = [
+  { id:1,  nombre:"Jugo de Naranja Botella",              envase:"Envase Original Refrigerado",   dias:3   },
+  { id:2,  nombre:"Jugo de Naranja Vaso Coolatta",        envase:"Envase Original Refrigerado",   dias:1   },
+  { id:3,  nombre:"Leche Gloria (Entera/Sin Lactosa)",    envase:"Envase Original Refrigerado",   dias:4   },
+  { id:4,  nombre:"Leche Laive (Almendra/Coco)",          envase:"Envase Original Refrigerado",   dias:4   },
+  { id:5,  nombre:"Queso Edam Braedt",                    envase:"Envase Hermético Refrigerado",  dias:4   },
+  { id:6,  nombre:"Mama Pizza",                           envase:"Envase Original Refrigerado",   dias:4   },
+  { id:7,  nombre:"Café Dark Roast en Granos",            envase:"Bolsa / Moledora Ambiente",     dias:10  },
+  { id:8,  nombre:"Café Espresso Whole Bean DD",          envase:"Bolsa / Moledora Ambiente",     dias:10  },
+  { id:9,  nombre:"Gotas de Chocolate",                   envase:"Envase Hermético con tapa",     dias:30  },
+  { id:10, nombre:"Chantilly (cerrado)",                  envase:"Envase Original Refrigerado",   dias:30  },
+  { id:11, nombre:"Tocino Otto Kunz",                     envase:"Envase con tapa Refrigerado",   dias:5   },
+  { id:12, nombre:"Taper de Acero",                       envase:"Taper de acero Refrigerado",    dias:5   },
+  { id:13, nombre:"Refrescante Fresa Pitahaya (abierto)", envase:"Envase Original Refrigerado",   dias:7   },
+  { id:14, nombre:"Chantilly (abierto)",                  envase:"Envase Original Refrigerado",   dias:7   },
+  { id:15, nombre:"Refrescante Mango Piña (cerrado)",     envase:"Envase Original Refrigerado",   dias:7   },
+  { id:16, nombre:"Base de Limonada Preparado",           envase:"Jarro plástico Refrigerado",    dias:7   },
+  { id:17, nombre:"Base de Limonada (abierto)",           envase:"Envase Hermético con tapa",     dias:7   },
+  { id:18, nombre:"Salsa Red Velvet",                     envase:"Envase Original / Aplicador",   dias:7   },
+  { id:19, nombre:"Canela Molida",                        envase:"Envase cerrado con tapa",       dias:7   },
+  { id:20, nombre:"Jarabe Caramelo Monin",                envase:"Envase Original Ambiente",      dias:90  },
+  { id:21, nombre:"Jarabe Chocolate Monin",               envase:"Envase Original Ambiente",      dias:90  },
+  { id:22, nombre:"Jarabe Chocolate Blanco Monin",        envase:"Envase Original Ambiente",      dias:90  },
+  { id:23, nombre:"Jarabe Bayas Silvestres Monin",        envase:"Envase Original Ambiente",      dias:90  },
+  { id:24, nombre:"Jarabe Fresa Monin",                   envase:"Envase Original Ambiente",      dias:90  },
+  { id:25, nombre:"Jarabe Vainilla Monin",                envase:"Envase Original Ambiente",      dias:90  },
+  { id:26, nombre:"Jarabe Sabor Artisan",                 envase:"Envase Original Ambiente",      dias:90  },
+  { id:27, nombre:"Jarabe Salted Caramel",                envase:"Envase Original Ambiente",      dias:90  },
+  { id:28, nombre:"Jarabe de Goma Artisan",               envase:"Envase Original Ambiente",      dias:30  },
+  { id:29, nombre:"Refrescante Fresa Pitahaya (cerrado)", envase:"Envase Original Ambiente",      dias:30  },
+  { id:30, nombre:"Refrescante Mango Piña (amb.)",        envase:"Envase Original Ambiente",      dias:120 },
+  { id:31, nombre:"Colorante Red Velvet Artisan",         envase:"Envase Original Ambiente",      dias:365 },
+  { id:32, nombre:"Colorante Dunkin Mango Artisan",       envase:"Envase Original Ambiente",      dias:365 },
+  { id:33, nombre:"Orégano PJ (0.100 kg)",                envase:"Envase cerrado con tapa",       dias:90  },
+  { id:34, nombre:"Proteína",                             envase:"Envase Abierto",                dias:180 }
+];
+
+const KEY = 'fechado_v2';
+function load() {
+  try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : [...DEFAULTS]; }
+  catch(e) { return [...DEFAULTS]; }
+}
+function save(p) { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch(e){} }
+
+const DIAS   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MESES  = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DCSS   = ['var(--domingo)','var(--lunes)','var(--martes)','var(--miercoles)','var(--jueves)','var(--viernes)','var(--sabado)'];
+
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function expiry(dias) {
+  const d = new Date(); d.setDate(d.getDate() + (dias - 1));
+  const dow = d.getDay();
+  return {
+    dow,
+    color: DCSS[dow],
+    dia:   DIAS[dow],
+    dd:    pad(d.getDate()),
+    mm:    pad(d.getMonth()+1),
+    mes:   MESES[d.getMonth()],
+    yyyy:  d.getFullYear(),
+    short: `${pad(d.getDate())}/${pad(d.getMonth()+1)}`
+  };
+}
+
+function updateChip() {
+  const n = new Date();
+  document.getElementById('todayChip').innerHTML =
+    `Hoy: <strong>${DIAS[n.getDay()]} ${pad(n.getDate())}/${pad(n.getMonth()+1)}</strong>`;
+}
+
+function renderLegend() {
+  const days = [['--lunes','Lun'],['--martes','Mar'],['--miercoles','Mié'],
+                ['--jueves','Jue'],['--viernes','Vie'],['--sabado','Sáb'],['--domingo','Dom']];
+  document.getElementById('legend').innerHTML = days.map(([v,l]) =>
+    `<div class="leg"><div class="leg-dot" style="background:var(${v})"></div>${l}</div>`
+  ).join('');
+}
+
+let openId = null;
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const list = load().filter(p => p.nombre.toLowerCase().includes(q));
+  const el = document.getElementById('list');
+
+  if (!list.length) {
+    el.innerHTML = '<div class="empty">No se encontró el producto.</div>';
+    return;
+  }
+
+  el.innerHTML = list.map(p => {
+    const ex = expiry(p.dias);
+    const isOpen = openId === p.id;
+
+    const expandHtml = `
+    <div class="item-expand">
+      <div class="expand-big">
+        <div class="e-label">Vence en ${p.dias} día${p.dias!==1?'s':''} — pon este sticker:</div>
+        <div class="e-dia">${ex.dia}</div>
+        <div class="e-fecha">${ex.dd} de ${ex.mes} ${ex.yyyy}</div>
+      </div>
+      <div class="sticker-box">
+        <div class="slabel">Escribe en el sticker</div>
+        <div class="sval">${ex.dia.toUpperCase()} ${ex.dd}/${ex.mm}/${ex.yyyy}</div>
+      </div>
+      <div class="expand-meta">
+        <div class="emeta-box">
+          <div class="el">Envase</div>
+          <div class="ev">${p.envase}</div>
+        </div>
+        <div class="emeta-box">
+          <div class="el">Días de vida</div>
+          <div class="ev">${p.dias} día${p.dias!==1?'s':''}</div>
+        </div>
+      </div>
+    </div>`;
+
+    return `
+    <div class="list-item${isOpen?' open':''}" style="--day-color:${ex.color}" id="item-${p.id}">
+      <div class="item-row" onclick="toggle(${p.id})">
+        <div class="strip"></div>
+        <div class="item-body">
+          <div class="item-name">${p.nombre}</div>
+          <div class="item-sub">${p.envase}</div>
+        </div>
+        <div class="date-pill">
+          <div class="vence-dia">${ex.dia.slice(0,3)}</div>
+          <div class="vence-fecha">${ex.short}</div>
+        </div>
+        <button class="btn-del" onclick="del(${p.id},event)">✕</button>
+      </div>
+      ${expandHtml}
+    </div>`;
+  }).join('');
+}
+
+function toggle(id) {
+  openId = openId === id ? null : id;
+  render();
+  if (openId) {
+    setTimeout(() => {
+      const el = document.getElementById('item-' + id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+}
+
+function addProd() {
+  const nombre = document.getElementById('nNombre').value.trim();
+  const dias   = parseInt(document.getElementById('nDias').value);
+  const envase = document.getElementById('nEnvase').value.trim() || 'Sin especificar';
+  if (!nombre) { alert('Escribe el nombre del producto.'); return; }
+  if (!dias || dias < 1) { alert('Escribe los días de vida útil.'); return; }
+  const all = load();
+  const id  = Math.max(0, ...all.map(p => p.id)) + 1;
+  all.push({ id, nombre, envase, dias });
+  save(all);
+  document.getElementById('nNombre').value = '';
+  document.getElementById('nDias').value   = '';
+  document.getElementById('nEnvase').value = '';
+  render();
+}
+
+function del(id, e) {
+  e.stopPropagation();
+  if (!confirm('¿Eliminar este producto?')) return;
+  save(load().filter(p => p.id !== id));
+  if (openId === id) openId = null;
+  render();
+}
+
+updateChip();
+renderLegend();
+render();
+setInterval(updateChip, 60000);
+</script>
+</body>
+</html>
